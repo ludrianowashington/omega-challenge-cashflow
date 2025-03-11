@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.omega.cashflow.controller.v1.movimentacao.dto.MovimentacaoCreateOrUpdateDTO;
 import com.omega.cashflow.controller.v1.movimentacao.dto.MovimentacaoResponseDTO;
-import com.omega.cashflow.enumeration.TipoEnum;
 
 import jakarta.validation.Valid;
 
@@ -35,7 +34,7 @@ public interface MovimentacaoAPI {
 
     @GetMapping("/search")
     ResponseEntity<Page<MovimentacaoResponseDTO>> search(
-        @RequestParam(required = false) TipoEnum tipo,
+        @RequestParam(required = false) String tipo,
         @RequestParam(required = false) Double valorMinimo,
         @RequestParam(required = false) Double valorMaximo,
         @RequestParam(required = false) String dataInicio,

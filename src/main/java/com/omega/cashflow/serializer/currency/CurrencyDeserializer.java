@@ -1,27 +1,35 @@
 package com.omega.cashflow.serializer.currency;
 
 import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.Locale;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
 public class CurrencyDeserializer extends JsonDeserializer<Double> {
-    private static final Locale LOCALE_BR = new Locale("pt", "BR");
+
 
     @Override
     public Double deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        String valor = p.getText()
-            .replace("R$", "")
-            .trim();
-
+        String valor = p.getText().trim();
         try {
-            NumberFormat format = NumberFormat.getNumberInstance(LOCALE_BR);
-            return format.parse(valor).doubleValue();
-        } catch (ParseException e) {
+            // Se for um número direto, apenas converte
+            if (!valor.contains("R$")) {
+                return Double.valueOf(valor);
+            }
+
+            // Limpa a formatação brasileira
+            valor = valor.replace("R$", "")
+                        .replaceAll("\\s+", "") // Remove espaços
+                        .replaceAll("[.](?=.*[.])", "") // Remove pontos de milhar
+                        .replace(",", ".") // Troca vírgula decimal por ponto
+                        .trim();
+
+            BigDecimal bigDecimal = new BigDecimal(valor).setScale(2, RoundingMode.HALF_UP);
+            return bigDecimal.doubleValue();
+        } catch (NumberFormatException e) {
             throw new RuntimeException("Erro ao desserializar valor monetário: " + valor, e);
         }
     }

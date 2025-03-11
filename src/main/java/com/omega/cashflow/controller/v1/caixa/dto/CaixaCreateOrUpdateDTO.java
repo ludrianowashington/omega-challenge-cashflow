@@ -25,7 +25,6 @@ public class CaixaCreateOrUpdateDTO implements Serializable {
   @NotNull(message = "A descrição não pode ser nula")
   private String descricao;
 
-  @NotNull(message = "O saldo inicial não pode ser nulo")
   @PositiveOrZero(message = "O saldo inicial deve ser positivo ou zero")
   @JsonSerialize(using = CurrencySerializer.class)
   @JsonDeserialize(using = CurrencyDeserializer.class)

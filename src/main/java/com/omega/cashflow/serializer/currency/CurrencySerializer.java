@@ -9,15 +9,21 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 public class CurrencySerializer extends JsonSerializer<Double> {
-    private static final Locale LOCALE_BR = new Locale("pt", "BR");
-    private static final NumberFormat FORMATTER = NumberFormat.getCurrencyInstance(LOCALE_BR);
 
     @Override
     public void serialize(Double value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        NumberFormat FORMATTER = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        FORMATTER.setMinimumFractionDigits(2);
+        FORMATTER.setMaximumFractionDigits(2);
+
         if (value == null) {
-            gen.writeNull();
+            gen.writeString("R$ 0,00");
             return;
         }
-        gen.writeString(FORMATTER.format(value));
+
+        String valorFormatado = FORMATTER.format(value)
+            .replace("\u00A0", " ");
+
+        gen.writeString(valorFormatado);
     }
 }

@@ -5,12 +5,12 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.omega.cashflow.controller.v1.movimentacao.dto.MovimentacaoCreateOrUpdateDTO;
 import com.omega.cashflow.enumeration.TipoEnum;
 import com.omega.cashflow.serializer.currency.CurrencyDeserializer;
 import com.omega.cashflow.serializer.currency.CurrencySerializer;
+import com.omega.cashflow.serializer.localDate.LocalDateDeserializer;
+import com.omega.cashflow.serializer.localDate.LocalDateSerializer;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

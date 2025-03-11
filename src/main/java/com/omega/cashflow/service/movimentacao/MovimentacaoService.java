@@ -1,5 +1,7 @@
 package com.omega.cashflow.service.movimentacao;
 
+import java.time.LocalDate;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,9 +24,10 @@ public interface MovimentacaoService {
         TipoEnum tipo,
         Double valorMinimo,
         Double valorMaximo,
-        String dataInicio,
-        String dataFim,
+        LocalDate dataInicio,
+        LocalDate dataFim,
         Long caixaId,
         Pageable pageable
     );
+
 }

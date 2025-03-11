@@ -1,5 +1,8 @@
 package com.omega.cashflow.controller.v1.movimentacao;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -37,15 +40,36 @@ public class MovimentacaoController implements MovimentacaoAPI {
 
     @Override
     public ResponseEntity<Page<MovimentacaoResponseDTO>> search(
-            TipoEnum tipo,
+            String tipo,
             Double valorMinimo,
             Double valorMaximo,
             String dataInicio,
             String dataFim,
             Long caixaId,
             Pageable pageable) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        LocalDate dataInicioFormatada = (dataInicio != null && !dataInicio.isEmpty())
+            ? LocalDate.parse(dataInicio, formatter)
+            : null;
+
+        LocalDate dataFimFormatada = (dataFim != null && !dataFim.isEmpty())
+            ? LocalDate.parse(dataFim, formatter)
+            : null;
+
+        TipoEnum tipoEnum = (tipo != null && !tipo.isEmpty())
+            ? TipoEnum.valueOf(tipo.toUpperCase())
+            : null;
+
         return ResponseEntity.ok(movimentacaoService.search(
-            tipo, valorMinimo, valorMaximo, dataInicio, dataFim, caixaId, pageable));
+            tipoEnum,
+            valorMinimo,
+            valorMaximo,
+            dataInicioFormatada,
+            dataFimFormatada,
+            caixaId,
+            pageable));
     }
 
     @Override

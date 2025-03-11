@@ -99,22 +99,32 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
         .orElseThrow(() -> new RecursoNaoEncontradoException("Movimentação não encontrada"));
 
     try {
-        // Validar novo DTO antes de mexer no saldo
+        // Validar novo DTO
         MovimentacaoEntity novaMovimentacao = new MovimentacaoEntity(dto);
         validarMovimentacao(novaMovimentacao);
 
-        var caixa = movimentacao.getCaixa();
-        reverterSaldoCaixa(caixa, movimentacao.getTipo(), movimentacao.getValor());
-        movimentacao.update(dto);
-        atualizarSaldoCaixa(caixa, dto.getTipo(), dto.getValor());
+        CaixaEntity caixaAtual = movimentacao.getCaixa();
 
-        // Salvar tudo de uma vez
-        caixaRepository.save(caixa);
-        movimentacaoRepository.save(movimentacao);
+        // Reverter saldo do caixa atual
+        reverterSaldoCaixa(caixaAtual, movimentacao.getTipo(), movimentacao.getValor());
+
+        // Se o DTO tem caixa diferente, trocar a referência
+        if (dto.getCaixa() != null && !caixaAtual.getId().equals(dto.getCaixa().getId())) {
+            CaixaEntity novoCaixa = caixaService.findById(dto.getCaixa().getId());
+            movimentacao.setCaixa(novoCaixa);
+            caixaAtual = novoCaixa;
+        }
+
+        // Atualizar movimentação e saldo
+        movimentacao.update(dto);
+        atualizarSaldoCaixa(caixaAtual, dto.getTipo(), dto.getValor());
+
+        // caixaRepository.save(caixaAtual);
+        // movimentacaoRepository.save(movimentacao);
 
         return MovimentacaoResponseDTO.toEntity(movimentacao);
     } catch (Exception e) {
-        throw new MovimentacaoException("Erro ao atualizar movimentação", e);
+        throw new MovimentacaoException("Erro ao atualizar movimentação: " + e.getMessage(), e);
     }
   }
 
@@ -149,19 +159,23 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
       TipoEnum tipo,
       Double valorMinimo,
       Double valorMaximo,
-      String dataInicio,
-      String dataFim,
+      LocalDate dataInicio,
+      LocalDate dataFim,
       Long caixaId,
       Pageable pageable) {
 
-    return movimentacaoRepository.search(
-        tipo,
-        valorMinimo,
-        valorMaximo,
-        dataInicio != null ? LocalDate.parse(dataInicio) : null,
-        dataFim != null ? LocalDate.parse(dataFim) : null,
-        caixaId,
-        pageable
-    ).map(MovimentacaoResponseDTO::toEntity);
+    try {
+        return movimentacaoRepository.search(
+            tipo,
+            valorMinimo,
+            valorMaximo,
+            dataInicio,
+            dataFim,
+            caixaId,
+            pageable
+        ).map(MovimentacaoResponseDTO::toEntity);
+    } catch (Exception e) {
+        throw new MovimentacaoException("Erro ao realizar busca de movimentações", e);
+    }
   }
 }
