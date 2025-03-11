@@ -2,6 +2,11 @@ package com.omega.cashflow.controller.v1.caixa.dto;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.omega.cashflow.serializer.currency.CurrencyDeserializer;
+import com.omega.cashflow.serializer.currency.CurrencySerializer;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -22,5 +27,7 @@ public class CaixaCreateOrUpdateDTO implements Serializable {
 
   @NotNull(message = "O saldo inicial não pode ser nulo")
   @PositiveOrZero(message = "O saldo inicial deve ser positivo ou zero")
+  @JsonSerialize(using = CurrencySerializer.class)
+  @JsonDeserialize(using = CurrencyDeserializer.class)
   private Double saldoInicial;
 }
