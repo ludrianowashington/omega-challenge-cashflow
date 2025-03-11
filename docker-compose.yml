@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: container_controle_caixa_db
+    environment:
+      - POSTGRES_USER=omega
+      - POSTGRES_PASSWORD=adminOm3g@
+      - POSTGRES_DB=dbcontrolecaixa
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+
+volumes:
+  postgres_data:
+
+networks:
+  postgres_network:
+    driver: bridge
