@@ -1,0 +1,68 @@
+package com.omega.cashflow.entity;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.omega.cashflow.controller.v1.movimentacao.dto.MovimentacaoCreateOrUpdateDTO;
+import com.omega.cashflow.enumeration.TipoEnum;
+import com.omega.cashflow.serializer.currency.CurrencyDeserializer;
+import com.omega.cashflow.serializer.currency.CurrencySerializer;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "movimentacao")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class MovimentacaoEntity implements Serializable {
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "descricao", nullable = false)
+    private String descricao;
+
+    @Column(name = "data", nullable = false)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate data;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "caixa", nullable = false)
+    private CaixaEntity caixa;
+
+    @Column(name = "tipo")
+    @Enumerated(value = EnumType.STRING)
+    private TipoEnum tipo;
+
+    @Column(name = "valor",nullable = false)
+    @JsonSerialize(using = CurrencySerializer.class)
+    @JsonDeserialize(using = CurrencyDeserializer.class)
+    private Double valor;
+
+    public MovimentacaoEntity(MovimentacaoCreateOrUpdateDTO mv) {
+        this.descricao = mv.getDescricao();
+        this.data = mv.getData();
+        this.tipo = mv.getTipo();
+        this.caixa = mv.getCaixa();
+        this.valor = mv.getValor();
+    }
+}
