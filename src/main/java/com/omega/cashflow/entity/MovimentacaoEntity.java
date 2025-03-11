@@ -17,6 +17,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,11 +34,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MovimentacaoEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "descricao", nullable = false)
+    @Column(name = "descricao", nullable = false, length = 255)
     private String descricao;
 
     @Column(name = "data", nullable = false)
@@ -45,15 +49,15 @@ public class MovimentacaoEntity implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate data;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "caixa", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "caixa_id", nullable = false, foreignKey = @ForeignKey(name = "fk_movimentacao_caixa"))
     private CaixaEntity caixa;
 
-    @Column(name = "tipo")
+    @Column(name = "tipo", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private TipoEnum tipo;
 
-    @Column(name = "valor",nullable = false)
+    @Column(name = "valor", nullable = false)
     @JsonSerialize(using = CurrencySerializer.class)
     @JsonDeserialize(using = CurrencyDeserializer.class)
     private Double valor;

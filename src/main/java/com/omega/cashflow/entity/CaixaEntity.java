@@ -27,14 +27,16 @@ import lombok.ToString;
 @Table(name = "caixa")
 public class CaixaEntity implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "descricao", nullable = false)
+  @Column(name = "descricao", nullable = false, unique = true)
   private String descricao;
 
-  @Column(name = "saldoInicial", nullable = false)
+  @Column(name = "saldo_inicial", nullable = false)
   @JsonSerialize(using = CurrencySerializer.class)
   @JsonDeserialize(using = CurrencyDeserializer.class)
   private Double saldoInicial;
