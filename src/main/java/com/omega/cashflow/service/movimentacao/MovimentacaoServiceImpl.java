@@ -105,6 +105,7 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
 
         CaixaEntity caixaAtual = movimentacao.getCaixa();
 
+
         // Reverter saldo do caixa atual
         reverterSaldoCaixa(caixaAtual, movimentacao.getTipo(), movimentacao.getValor());
 
@@ -119,8 +120,8 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
         movimentacao.update(dto);
         atualizarSaldoCaixa(caixaAtual, dto.getTipo(), dto.getValor());
 
-        // caixaRepository.save(caixaAtual);
-        // movimentacaoRepository.save(movimentacao);
+        caixaRepository.save(caixaAtual);
+        movimentacaoRepository.save(movimentacao);
 
         return MovimentacaoResponseDTO.toEntity(movimentacao);
     } catch (Exception e) {
