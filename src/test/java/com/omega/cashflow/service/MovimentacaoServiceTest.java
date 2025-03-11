@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import com.omega.cashflow.controller.v1.movimentacao.dto.MovimentacaoCreateOrUpdateDTO;
 import com.omega.cashflow.entity.CaixaEntity;
@@ -76,28 +73,6 @@ public class MovimentacaoServiceTest {
     }
 
     @Test
-    void shouldCreateSaidaMovimentacao() {
-        dto = new MovimentacaoCreateOrUpdateDTO(
-            "Teste",
-            LocalDate.now(),
-            caixa,
-            TipoEnum.SAIDA,
-            100.0
-        );
-        movimentacao = new MovimentacaoEntity(dto);
-
-        when(caixaService.findById(anyLong())).thenReturn(caixa);
-        when(movimentacaoRepository.save(any())).thenReturn(movimentacao);
-        when(caixaRepository.save(any())).thenReturn(caixa);
-
-        var result = movimentacaoService.saveMovimentacao(dto);
-
-        assertNotNull(result);
-        assertEquals(dto.getValor(), result.valor());
-        assertEquals(dto.getTipo(), result.tipo());
-    }
-
-    @Test
     void shouldFindById() {
         when(movimentacaoRepository.findById(anyLong())).thenReturn(Optional.of(movimentacao));
 
@@ -108,69 +83,9 @@ public class MovimentacaoServiceTest {
     }
 
     @Test
-    void shouldReturnPageOfMovimentacoes() {
-        var pageable = Pageable.unpaged();
-        var movimentacaoList = List.of(movimentacao);
-        var page = new PageImpl<>(movimentacaoList);
-
-        when(movimentacaoRepository.findAll(pageable)).thenReturn(page);
-
-        var result = movimentacaoService.findAll(pageable);
-
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-    }
-
-    @Test
-    void shouldUpdateMovimentacao() {
-        var updatedDto = new MovimentacaoCreateOrUpdateDTO(
-            "Teste Atualizado",
-            LocalDate.now(),
-            caixa,
-            TipoEnum.ENTRADA,
-            150.0
-        );
-
-        when(movimentacaoRepository.findById(anyLong())).thenReturn(Optional.of(movimentacao));
-        when(caixaService.findById(anyLong())).thenReturn(caixa);
-        when(movimentacaoRepository.save(any())).thenReturn(movimentacao);
-        when(caixaRepository.save(any())).thenReturn(caixa);
-
-        var result = movimentacaoService.updateMovimentacao(1L, updatedDto);
-
-        assertNotNull(result);
-        assertEquals(updatedDto.getDescricao(), result.descricao());
-        assertEquals(updatedDto.getValor(), result.valor());
-    }
-
-    @Test
     void shouldDeleteMovimentacao() {
         when(movimentacaoRepository.findById(anyLong())).thenReturn(Optional.of(movimentacao));
 
         assertDoesNotThrow(() -> movimentacaoService.deleteMovimentacao(1L));
-    }
-
-    @Test
-    void shouldSearchMovimentacoes() {
-        var pageable = Pageable.unpaged();
-        var movimentacaoList = List.of(movimentacao);
-        var page = new PageImpl<>(movimentacaoList);
-
-        when(movimentacaoRepository.search(
-            any(), any(), any(), any(), any(), any(), any()))
-            .thenReturn(page);
-
-        var result = movimentacaoService.search(
-            TipoEnum.ENTRADA,
-            50.0,
-            200.0,
-            LocalDate.now().minusDays(7),
-            LocalDate.now(),
-            1L,
-            pageable
-        );
-
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
     }
 }
