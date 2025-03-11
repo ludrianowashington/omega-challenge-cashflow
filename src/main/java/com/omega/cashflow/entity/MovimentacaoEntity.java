@@ -65,4 +65,23 @@ public class MovimentacaoEntity implements Serializable {
         this.caixa = mv.getCaixa();
         this.valor = mv.getValor();
     }
+
+    public void update(MovimentacaoCreateOrUpdateDTO dto) {
+        this.descricao = dto.getDescricao();
+        this.data = dto.getData();
+        this.tipo = dto.getTipo();
+        this.valor = dto.getValor();
+    }
+
+    public void validar() {
+        if (this.valor <= 0) {
+            throw new IllegalArgumentException("O valor da movimentação deve ser maior que zero");
+        }
+        if (this.data == null) {
+            throw new IllegalArgumentException("A data da movimentação é obrigatória");
+        }
+        if (this.descricao == null || this.descricao.trim().isEmpty()) {
+            throw new IllegalArgumentException("A descrição da movimentação é obrigatória");
+        }
+    }
 }
