@@ -37,6 +37,24 @@ public class CaixaEntity implements Serializable {
 
   public CaixaEntity(CaixaCreateOrUpdateDTO cx) {
     this.descricao = cx.getDescricao();
-    this.saldoInicial = cx.getSaldoInicial();
+    this.saldoInicial = 0.0;
+  }
+
+  public void addSaldo(Double valor) {
+    this.saldoInicial = Double.sum(this.saldoInicial, valor);
+  }
+
+  public void removeSaldo(Double valor) {
+    validateAmountUnsuficient(valor);
+
+    this.saldoInicial -= valor;
+  }
+
+  private void validateAmountUnsuficient(
+    Double valor
+  ) {
+    if (this.saldoInicial.compareTo(valor) < 0) {
+      throw new IllegalArgumentException("Saldo insuficiente no caixa para realizar a saída.");
+    }
   }
 }
