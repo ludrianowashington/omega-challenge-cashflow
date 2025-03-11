@@ -17,7 +17,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -50,7 +49,7 @@ public class MovimentacaoEntity implements Serializable {
     private LocalDate data;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "caixa_id", nullable = false, foreignKey = @ForeignKey(name = "fk_movimentacao_caixa"))
+    @JoinColumn(name = "caixa", nullable = false)
     private CaixaEntity caixa;
 
     @Column(name = "tipo", nullable = false)

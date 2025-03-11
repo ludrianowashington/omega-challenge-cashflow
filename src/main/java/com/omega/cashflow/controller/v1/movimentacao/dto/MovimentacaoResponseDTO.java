@@ -10,6 +10,7 @@ import com.omega.cashflow.serializer.currency.CurrencySerializer;
 import com.omega.cashflow.serializer.localDate.LocalDateSerializer;
 
 public record MovimentacaoResponseDTO(
+  Long id,
   @JsonSerialize(using = LocalDateSerializer.class)
   LocalDate data,
   TipoEnum tipo,
@@ -20,6 +21,7 @@ public record MovimentacaoResponseDTO(
 ) {
   public static MovimentacaoResponseDTO toEntity(MovimentacaoEntity mv) {
     return new MovimentacaoResponseDTO(
+      mv.getId(),
       mv.getData(),
       mv.getTipo(),
       CaixaResponseDTO.toEntity(mv.getCaixa()),
