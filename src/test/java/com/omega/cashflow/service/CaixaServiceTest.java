@@ -109,4 +109,34 @@ public class CaixaServiceTest {
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
     }
+
+    @Test
+    void shouldReturnCaixaById() {
+        when(caixaRepository.existsById(anyLong())).thenReturn(true);
+        when(caixaRepository.findById(anyLong())).thenReturn(Optional.of(caixaEntity));
+
+        var result = caixaService.findById(1L);
+
+        assertNotNull(result);
+        assertEquals(caixaEntity.getDescricao(), result.getDescricao());
+    }
+
+    @Test
+    void shouldThrowWhenUpdateWithExistingDescricao() {
+        var updateDto = new CaixaCreateOrUpdateDTO("Outro Caixa", 200.0);
+        var existingCaixa = new CaixaEntity(2L, "Outro Caixa", 200.0);
+
+        when(caixaRepository.existsById(anyLong())).thenReturn(true);
+        when(caixaRepository.findById(anyLong())).thenReturn(Optional.of(caixaEntity));
+        when(caixaRepository.findCaixaByDescricao(anyString())).thenReturn(Optional.of(existingCaixa));
+
+        assertThrows(EntityExistsException.class, () -> caixaService.updateCaixa(1L, updateDto));
+    }
+
+    @Test
+    void shouldThrowWhenDeleteNonExistentCaixa() {
+        when(caixaRepository.existsById(anyLong())).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> caixaService.deleteCaixa(1L));
+    }
 }

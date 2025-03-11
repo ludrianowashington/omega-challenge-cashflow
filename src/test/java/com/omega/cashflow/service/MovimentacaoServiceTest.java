@@ -1,5 +1,6 @@
 package com.omega.cashflow.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -115,6 +116,59 @@ public class MovimentacaoServiceTest {
         when(movimentacaoRepository.findAll(pageable)).thenReturn(page);
 
         var result = movimentacaoService.findAll(pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+    }
+
+    @Test
+    void shouldUpdateMovimentacao() {
+        var updatedDto = new MovimentacaoCreateOrUpdateDTO(
+            "Teste Atualizado",
+            LocalDate.now(),
+            caixa,
+            TipoEnum.ENTRADA,
+            150.0
+        );
+
+        when(movimentacaoRepository.findById(anyLong())).thenReturn(Optional.of(movimentacao));
+        when(caixaService.findById(anyLong())).thenReturn(caixa);
+        when(movimentacaoRepository.save(any())).thenReturn(movimentacao);
+        when(caixaRepository.save(any())).thenReturn(caixa);
+
+        var result = movimentacaoService.updateMovimentacao(1L, updatedDto);
+
+        assertNotNull(result);
+        assertEquals(updatedDto.getDescricao(), result.descricao());
+        assertEquals(updatedDto.getValor(), result.valor());
+    }
+
+    @Test
+    void shouldDeleteMovimentacao() {
+        when(movimentacaoRepository.findById(anyLong())).thenReturn(Optional.of(movimentacao));
+
+        assertDoesNotThrow(() -> movimentacaoService.deleteMovimentacao(1L));
+    }
+
+    @Test
+    void shouldSearchMovimentacoes() {
+        var pageable = Pageable.unpaged();
+        var movimentacaoList = List.of(movimentacao);
+        var page = new PageImpl<>(movimentacaoList);
+
+        when(movimentacaoRepository.search(
+            any(), any(), any(), any(), any(), any(), any()))
+            .thenReturn(page);
+
+        var result = movimentacaoService.search(
+            TipoEnum.ENTRADA,
+            50.0,
+            200.0,
+            LocalDate.now().minusDays(7),
+            LocalDate.now(),
+            1L,
+            pageable
+        );
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
