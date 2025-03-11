@@ -10,9 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,14 +29,10 @@ public class CaixaEntity implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "descricao", nullable = false, unique = true)
-  @NotBlank
-  @NotEmpty
+  @Column(name = "descricao", nullable = false)
   private String descricao;
 
   @Column(name = "saldoInicial", nullable = false)
-  @NotEmpty
-  @Min(value = 0)
   private Double saldoInicial;
 
   public CaixaEntity(CaixaCreateOrUpdateDTO cx) {
